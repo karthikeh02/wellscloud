@@ -15,9 +15,9 @@ const cards = [
   },
   {
     img: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlpromo/wfi_ph_hpsp_fsalockup_616x353.jpg',
-    title: 'Savings you can count on',
-    desc: 'Discover how smart saving moves you closer to your goals',
-    cta: 'Grow your savings',
+    title: 'Your shield against scams',
+    desc: 'Spot the latest tactics scammers are using',
+    cta: 'Get the latest',
   },
 ];
 

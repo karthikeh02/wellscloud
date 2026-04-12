@@ -2,7 +2,7 @@ export default function FooterDisclaimer() {
   const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
   return (
-    <div style={{ backgroundColor: '#f9f7f6' }}>
+    <div style={{ backgroundColor: '#fff' }}>
       <div className="max-w-[1400px] mx-auto px-5 py-8">
         {/* Investment Disclaimer */}
         <div
