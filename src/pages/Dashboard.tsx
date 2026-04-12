@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FooterHelp from '../components/Footer/FooterHelp';
 import FooterLinks from '../components/Footer/FooterLinks';
@@ -217,21 +218,45 @@ export default function Dashboard() {
 }
 
 function AccountCard({ title, balance }: { title: string; balance: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
+
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '4px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden', display: 'flex', alignItems: 'stretch' }}>
-      <div style={{ width: '4px', backgroundColor: '#D71E28', flexShrink: 0 }} />
-      <div style={{ flex: 1, padding: '24px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h2 style={{ fontFamily: '"Wells Fargo Sans", Arial, Helvetica, sans-serif', fontSize: '1rem', fontWeight: 700, color: '#D71E28', margin: 0, letterSpacing: '0.5px' }}>{title}</h2>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontFamily: '"Wells Fargo Sans", Arial, Helvetica, sans-serif', fontSize: '1.29rem', fontWeight: 400, color: '#141414' }}>{balance}</div>
-          <div style={{ fontFamily: '"Wells Fargo Sans", Arial, Helvetica, sans-serif', fontSize: '0.82rem', color: '#787070' }}>Available balance</div>
+    <div
+      onClick={() => setExpanded(!expanded)}
+      style={{
+        backgroundColor: '#fff', borderRadius: '4px', marginBottom: '16px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden',
+        cursor: 'pointer', transition: 'box-shadow 0.2s',
+      }}
+      className="hover:shadow-md"
+    >
+      <div style={{ display: 'flex', alignItems: 'stretch' }}>
+        <div style={{ width: '4px', backgroundColor: '#D71E28', flexShrink: 0 }} />
+        <div style={{ flex: 1, padding: '24px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontFamily: f, fontSize: '1rem', fontWeight: 700, color: '#D71E28', margin: 0, letterSpacing: '0.5px' }}>{title}</h2>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontFamily: f, fontSize: '1.29rem', fontWeight: 400, color: '#141414' }}>{balance}</div>
+            <div style={{ fontFamily: f, fontSize: '0.82rem', color: '#787070' }}>Available balance</div>
+          </div>
+        </div>
+        <div
+          onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+          style={{ width: '40px', backgroundColor: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '20px', color: '#fff' }} fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
+          </svg>
         </div>
       </div>
-      <div style={{ width: '40px', backgroundColor: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-        <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '20px', color: '#fff' }} fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
-        </svg>
-      </div>
+      {expanded && (
+        <div style={{ display: 'flex', alignItems: 'stretch', borderTop: '1px solid #e2dede' }}>
+          <div style={{ width: '4px', backgroundColor: '#D71E28', flexShrink: 0 }} />
+          <div style={{ flex: 1, padding: '20px', fontFamily: f, fontSize: '1rem', color: '#787070', fontStyle: 'italic' }}>
+            No transactions available.
+          </div>
+        </div>
+      )}
     </div>
   );
 }
