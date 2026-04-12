@@ -10,7 +10,7 @@ export default function FooterHelp() {
         }}>
           How can we help?
         </h2>
-        <div className="flex items-start" style={{ gap: '80px' }}>
+        <div className="flex items-start" style={{ justifyContent: 'space-between' }}>
           {/* Find a location */}
           <div className="flex items-center gap-3">
             <div style={{

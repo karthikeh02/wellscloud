@@ -2,13 +2,13 @@ const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
 const cards = [
   {
-    img: 'https://www17.wellsfargomedia.com/assets/images/rwd/volunteers_cars_616x353.jpg',
+    img: '/images/volunteers_cars.jpg',
     title: 'Who we are',
     desc: 'Wells Fargo helps strengthen communities through inclusion, economic empowerment, and sustainability.',
     cta: 'About Wells Fargo',
   },
   {
-    img: 'https://www17.wellsfargomedia.com/assets/images/rwd/women-in-greenhouse_616x353.png',
+    img: '/images/women_greenhouse.png',
     title: "Why we\u2019re committed to communities",
     desc: "We don\u2019t just serve our communities\u2014we are our communities. We\u2019re committed to helping customers and neighborhoods across the country thrive.",
     cta: 'Wells Fargo Stories',

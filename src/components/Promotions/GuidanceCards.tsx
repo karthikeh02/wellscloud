@@ -58,15 +58,16 @@ export default function GuidanceCards() {
                 <p>
                   <a
                     href="#"
-                    className="inline-block hover:underline"
+                    className="inline-flex items-center gap-1 hover:underline"
                     style={{
-                      backgroundColor: '#fff', border: '1px solid #3b3331', color: '#3b3331',
-                      borderRadius: '24px', fontFamily: f, fontWeight: 600, fontSize: '0.88235294rem',
-                      lineHeight: '1.29', padding: '8px 20px',
-                      textAlign: 'center', textDecoration: 'none',
+                      color: '#5a469b', fontFamily: f, fontSize: '0.88235294rem',
+                      textDecoration: 'none',
                     }}
                   >
                     {card.cta}
+                    <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '10px', height: '10px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                   </a>
                 </p>
               </div>
