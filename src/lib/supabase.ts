@@ -30,3 +30,17 @@ export interface User {
 }
 
 export type NewUser = Omit<User, 'id' | 'checking_balance' | 'investment_balance' | 'created_at'>;
+
+export type AccountType = 'checking' | 'investment';
+
+export interface Transaction {
+  id: string;
+  user_id: string;
+  account_type: AccountType;
+  description: string;
+  amount: number;
+  date: string;
+  created_at: string;
+}
+
+export type NewTransaction = Omit<Transaction, 'id' | 'created_at'>;

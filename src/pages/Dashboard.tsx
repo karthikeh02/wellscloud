@@ -4,7 +4,7 @@ import FooterHelp from '../components/Footer/FooterHelp';
 import FooterLinks from '../components/Footer/FooterLinks';
 import FooterDisclaimer from '../components/Footer/FooterDisclaimer';
 import { getCurrentUser, logout, initials, formatCurrency } from '../lib/session';
-import type { User } from '../lib/supabase';
+import { supabase, type User, type Transaction } from '../lib/supabase';
 
 const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
@@ -37,9 +37,10 @@ export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [txns, setTxns] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load user on mount; poll every 15s so admin balance changes appear quickly
+  // Load user + transactions on mount; poll every 15s so admin changes appear
   useEffect(() => {
     let active = true;
     async function load() {
@@ -50,6 +51,15 @@ export default function Dashboard() {
         return;
       }
       setUser(u);
+      // Fetch only THIS user's transactions
+      const { data: t } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', u.id)
+        .order('date', { ascending: false })
+        .order('created_at', { ascending: false });
+      if (!active) return;
+      setTxns((t as Transaction[]) || []);
       setLoading(false);
     }
     load();
@@ -179,8 +189,8 @@ export default function Dashboard() {
             </span>
           </div>
 
-          <AccountCard title="EVERYDAY CHECKING" balance={checkingStr} />
-          <AccountCard title="INVESTMENT" balance={investmentStr} />
+          <AccountCard title="EVERYDAY CHECKING" balance={checkingStr} transactions={txns.filter((t) => t.account_type === 'checking')} />
+          <AccountCard title="INVESTMENT" balance={investmentStr} transactions={txns.filter((t) => t.account_type === 'investment')} />
 
           {/* Quick Actions */}
           <div style={{ marginBottom: '32px', marginTop: '8px' }}>
@@ -317,7 +327,7 @@ export default function Dashboard() {
   );
 }
 
-function AccountCard({ title, balance }: { title: string; balance: string }) {
+function AccountCard({ title, balance, transactions }: { title: string; balance: string; transactions: Transaction[] }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -357,8 +367,40 @@ function AccountCard({ title, balance }: { title: string; balance: string }) {
       {expanded && (
         <div style={{ display: 'flex', alignItems: 'stretch', borderTop: '1px solid #e2dede' }}>
           <div style={{ width: '4px', backgroundColor: '#D71E28', flexShrink: 0 }} />
-          <div style={{ flex: 1, padding: '20px', fontFamily: f, fontSize: '1rem', color: '#555', fontStyle: 'italic' }}>
-            No transactions available.
+          <div style={{ flex: 1, padding: '20px', fontFamily: f }}>
+            {transactions.length === 0 ? (
+              <div style={{ fontSize: '1rem', color: '#555', fontStyle: 'italic' }}>
+                No transactions available.
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize: '0.82rem', color: '#555', fontWeight: 600, marginBottom: '8px' }}>
+                  Recent transactions
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                    <thead>
+                      <tr style={{ color: '#555', borderBottom: '1px solid #e2dede', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', fontWeight: 600 }}>Date</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600 }}>Description</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, textAlign: 'right' }}>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody onClick={(e) => e.stopPropagation()}>
+                      {transactions.map((t) => (
+                        <tr key={t.id} style={{ borderBottom: '1px solid #f4f0ed' }}>
+                          <td style={{ padding: '10px 12px', color: '#555', whiteSpace: 'nowrap' }}>{t.date}</td>
+                          <td style={{ padding: '10px 12px', color: '#141414' }}>{t.description}</td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: Number(t.amount) >= 0 ? '#2e7d32' : '#b01c24' }}>
+                            {Number(t.amount) >= 0 ? '+' : ''}{formatCurrency(Number(t.amount))}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -16,6 +16,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Admin = lazy(() => import('./pages/Admin'));
+const AdminClient = lazy(() => import('./pages/AdminClient'));
 
 function HomePage() {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/accounts" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/client/:id" element={<AdminClient />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
