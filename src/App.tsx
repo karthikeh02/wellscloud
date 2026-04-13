@@ -12,6 +12,7 @@ import FooterHelp from './components/Footer/FooterHelp';
 import FooterLinks from './components/Footer/FooterLinks';
 import FooterDisclaimer from './components/Footer/FooterDisclaimer';
 import ErrorBoundary from './components/ErrorBoundary';
+import InstallPrompt from './components/InstallPrompt';
 
 const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -43,6 +44,7 @@ function LoadingFallback() {
 function App() {
   return (
     <ErrorBoundary>
+      <InstallPrompt />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
