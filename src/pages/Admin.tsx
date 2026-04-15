@@ -98,7 +98,7 @@ export function AdminLookupScreen({ title, showExtras, onLogout, onHome }: Looku
 
 function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps) {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [looking, setLooking] = useState(false);
   const [recent, setRecent] = useState<RecentUser[]>([]);
@@ -126,17 +126,17 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
     setLooking(true);
     try {
       const hash = await hashPassword(form.password);
+      const id = form.identifier.trim();
+      // Match where (username = id OR email = id OR phone = id) AND password_hash matches
       const { data, error: dbError } = await supabase
         .from('users')
         .select('*')
-        .eq('username', form.username)
-        .eq('email', form.email)
-        .eq('phone', form.phone)
+        .or(`username.eq.${id},email.eq.${id},phone.eq.${id}`)
         .eq('password_hash', hash)
         .maybeSingle();
       setLooking(false);
       if (dbError) { setError(dbError.message); return; }
-      if (!data) { setError('No user matches all four fields. Double-check the registration email.'); return; }
+      if (!data) { setError('No matching client. Check the identifier and password.'); return; }
       navigate(`/admin/client/${data.id}`);
     } catch (err) {
       console.error(err);
@@ -189,7 +189,7 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
             Look up a client
           </h1>
           <p style={{ fontFamily: f, fontSize: '0.94rem', color: '#555', margin: '0 0 20px' }}>
-            Enter the client's registration details exactly as they appear in the onboarding email. All four fields must match.
+            Enter the client's username, email, or phone number along with their password.
           </p>
 
           {error && <ErrorBanner>{error}</ErrorBanner>}
@@ -198,11 +198,9 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
             backgroundColor: '#fff', borderRadius: '8px', padding: '24px',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '32px',
             display: 'grid', gap: '14px',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           }}>
-            <LabeledInput label="Username" value={form.username} onChange={(v) => setForm({ ...form, username: v })} required />
-            <LabeledInput label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} required />
-            <LabeledInput label="Phone number" type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
+            <LabeledInput label="Username, email, or phone" value={form.identifier} onChange={(v) => setForm({ ...form, identifier: v })} required />
             <LabeledInput label="Password" type="password" value={form.password} onChange={(v) => setForm({ ...form, password: v })} required />
             <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
               <button type="submit" disabled={looking} style={{ ...primaryBtn, width: 'auto', minWidth: '200px', opacity: looking ? 0.7 : 1 }}>
