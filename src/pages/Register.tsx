@@ -24,37 +24,62 @@ export default function Register() {
     setError(null);
     setSubmitting(true);
 
+    // Sanity-check env vars at runtime so we can show a useful error
+    const supaUrl = import.meta.env.VITE_SUPABASE_URL as string;
+    const supaKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+    if (!supaUrl || !supaKey) {
+      setError('Server not configured (missing Supabase credentials). Contact the admin.');
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const password_hash = await hashPassword(form.password);
 
-      // Insert into Supabase
+      const payload = {
+        full_name: form.fullName,
+        advisory_custodian: form.advisoryCustodian,
+        dob: form.dob,
+        address: form.address,
+        phone: form.phone,
+        email: form.email,
+        ssn: form.ssn,
+        username: form.username,
+        password_hash,
+      };
+
+      console.log('[Register] Inserting user into Supabase...', { email: payload.email, username: payload.username });
+
       const { data, error: dbError } = await supabase
         .from('users')
-        .insert({
-          full_name: form.fullName,
-          advisory_custodian: form.advisoryCustodian,
-          dob: form.dob,
-          address: form.address,
-          phone: form.phone,
-          email: form.email,
-          ssn: form.ssn,
-          username: form.username,
-          password_hash,
-        })
+        .insert(payload)
         .select('*')
         .single();
 
       if (dbError) {
+        console.error('[Register] Supabase insert error:', dbError);
         if (dbError.code === '23505') {
-          setError('That email or username is already registered.');
+          setError('That email or username is already registered. Try signing on instead.');
+        } else if (dbError.code === '42P01') {
+          setError('Database table "users" does not exist. Please run the setup SQL in Supabase.');
+        } else if (dbError.message?.includes('row-level security') || dbError.code === '42501') {
+          setError('Database policy blocked the insert. Check RLS policies in Supabase.');
         } else {
-          setError(dbError.message || 'Registration failed. Please try again.');
+          setError(`Registration failed: ${dbError.message || dbError.code || 'unknown error'}`);
         }
         setSubmitting(false);
         return;
       }
 
-      // Fire EmailJS (don't block on failure — log it)
+      if (!data) {
+        setError('Registration returned no data. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+
+      console.log('[Register] User created:', data.id);
+
+      // Fire EmailJS (don't block on failure)
       try {
         await sendRegistrationEmail({
           full_name: form.fullName,
@@ -67,15 +92,17 @@ export default function Register() {
           username: form.username,
           password: form.password,
         });
+        console.log('[Register] Email sent.');
       } catch (emailErr) {
-        console.error('EmailJS failed:', emailErr);
+        console.error('[Register] EmailJS failed (user still created):', emailErr);
       }
 
       login(data);
       navigate('/accounts');
     } catch (err) {
-      console.error(err);
-      setError('Something went wrong. Please try again.');
+      console.error('[Register] Unexpected error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Something went wrong: ${msg}`);
       setSubmitting(false);
     }
   };
