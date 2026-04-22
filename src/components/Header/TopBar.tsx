@@ -24,7 +24,7 @@ export default function TopBar() {
         {/* Logo */}
         <a className="flex items-center" style={{ textDecoration: 'none' }}>
           <img
-            src="https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png"
+            src="/logo/wf_logo_220x23.png"
             alt="Wells Fargo Home Page"
             style={{ height: '23px', width: 'auto', filter: 'brightness(0) invert(1)' }}
           />

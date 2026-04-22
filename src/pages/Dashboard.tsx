@@ -102,7 +102,7 @@ export default function Dashboard() {
       <header style={{ backgroundColor: '#D71E28', borderBottom: '4px solid #FFCD41', height: '60px', display: 'flex', alignItems: 'center' }}>
         <div className="max-w-[1400px] mx-auto w-full wf-section-px" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ textDecoration: 'none' }}>
-            <img src="https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png" alt="Wells Fargo" width="180" height="20" style={{ height: '20px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
+            <img src="/logo/wf_logo_220x23.png" alt="Wells Fargo" width="180" height="20" style={{ height: '20px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button type="button" aria-label="Search" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '8px' }}>
@@ -282,12 +282,12 @@ export default function Dashboard() {
                 Get valuable insights like a summary of your spending by category, retailer and across accounts.
               </p>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <a aria-label="Download on the App Store"><img src="https://www17.wellsfargomedia.com/assets/images/rwd/App_Store_Badge.png" alt="" loading="lazy" style={{ height: '36px' }} /></a>
-                <a aria-label="Get it on Google Play"><img src="https://www17.wellsfargomedia.com/assets/images/rwd/GooglePlay_Badge.png" alt="" loading="lazy" style={{ height: '36px' }} /></a>
+                <a aria-label="Download on the App Store"><img src="/logo/App_Store_Badge.png" alt="" loading="lazy" style={{ height: '36px' }} /></a>
+                <a aria-label="Get it on Google Play"><img src="/logo/GooglePlay_Badge.png" alt="" loading="lazy" style={{ height: '36px' }} /></a>
               </div>
             </div>
             <img
-              src="https://www17.wellsfargomedia.com/assets/images/rwd/Fargo-Spending-Insights-Wells-Fargo-Mobile-App-2025.png"
+              src="/images/fargo-hero.png"
               alt="" loading="lazy"
               style={{ maxHeight: '280px', maxWidth: '100%', objectFit: 'contain' }}
             />
@@ -302,9 +302,9 @@ export default function Dashboard() {
             </h2>
             <div className="wf-grid-3">
               {[
-                { img: 'https://www17.wellsfargomedia.com/mkt/marketing/digital-containers/images/616x353/wfi_ph_g_1263166552-protecting_hpsp_616x353.jpg', title: 'Protect what matters', desc: 'Learn about identity theft protection and fraud monitoring services.', cta: 'Learn more' },
-                { img: 'https://www17.wellsfargomedia.com/mkt/marketing/digital-containers/images/616x353/wfi_ph_g_1184079607-financialgoals_hpsp_616x353.jpg', title: 'Your financial goals', desc: 'Start crafting the foundation for the future you see yourself in.', cta: 'Get started' },
-                { img: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlpromo/wfi_ph_hpsp_fsalockup_616x353.jpg', title: 'Fraud & Scam Alert', desc: 'Spot the latest tactics scammers are using and stay protected.', cta: 'Stay updated' },
+                { img: '/images/guidance-protecting.jpg', title: 'Protect what matters', desc: 'Learn about identity theft protection and fraud monitoring services.', cta: 'Learn more' },
+                { img: '/images/guidance-financialgoals.jpg', title: 'Your financial goals', desc: 'Start crafting the foundation for the future you see yourself in.', cta: 'Get started' },
+                { img: '/images/guidance-fsalockup.jpg', title: 'Fraud & Scam Alert', desc: 'Spot the latest tactics scammers are using and stay protected.', cta: 'Stay updated' },
               ].map((card) => (
                 <div key={card.title} className="wf-card-hover" style={{ backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 1px 5px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
                   <img src={card.img} alt="" loading="lazy" style={{ width: '100%', height: '160px', objectFit: 'cover' }} />

@@ -6,7 +6,7 @@ export default function PromoBanner() {
       <div className="max-w-[1400px] mx-auto relative" style={{ overflow: 'hidden' }}>
         {/* Background image */}
         <img
-          src="https://www17.wellsfargomedia.com/mkt/marketing/digital-containers/images/1600x700/choice_hplp_beach_family_1600x700.jpg"
+          src="/images/promo-beach-family.jpg"
           alt=""
           style={{ width: '100%', display: 'block', minHeight: '350px', objectFit: 'cover' }}
           loading="lazy"

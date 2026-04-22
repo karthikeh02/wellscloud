@@ -2,19 +2,19 @@ const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
 const cards = [
   {
-    img: 'https://www17.wellsfargomedia.com/mkt/marketing/digital-containers/images/616x353/wfi_ph_g_1263166552-protecting_hpsp_616x353.jpg',
+    img: '/images/guidance-protecting.jpg',
     title: 'Your dreams, your plan',
     desc: 'Start crafting the foundation for the future you see yourself in',
     cta: 'Get started',
   },
   {
-    img: 'https://www17.wellsfargomedia.com/mkt/marketing/digital-containers/images/616x353/wfi_ph_g_1184079607-financialgoals_hpsp_616x353.jpg',
+    img: '/images/guidance-financialgoals.jpg',
     title: 'Borrowing built around you',
     desc: 'Discover borrowing designed for every step of your journey',
     cta: 'Explore borrowing',
   },
   {
-    img: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlpromo/wfi_ph_hpsp_fsalockup_616x353.jpg',
+    img: '/images/guidance-fsalockup.jpg',
     title: 'Your shield against scams',
     desc: 'Spot the latest tactics scammers are using',
     cta: 'Get the latest',

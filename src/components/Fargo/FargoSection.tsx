@@ -8,7 +8,7 @@ export default function FargoSection() {
           {/* Left: Phone image */}
           <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center' }}>
             <img
-              src="https://www17.wellsfargomedia.com/assets/images/rwd/Fargo-Spending-Insights-Wells-Fargo-Mobile-App-2025.png"
+              src="/images/fargo-hero.png"
               alt=""
               loading="lazy"
               style={{ maxHeight: '420px', maxWidth: '100%', objectFit: 'contain' }}
@@ -35,13 +35,13 @@ export default function FargoSection() {
               <div className="flex items-center gap-3 mb-4">
                 <a  aria-label="Download on the App Store">
                   <img
-                    src="https://www17.wellsfargomedia.com/assets/images/rwd/App_Store_Badge.png"
+                    src="/logo/App_Store_Badge.png"
                     alt="" style={{ height: '40px' }}
                   />
                 </a>
                 <a  aria-label="Get it on Google Play">
                   <img
-                    src="https://www17.wellsfargomedia.com/assets/images/rwd/GooglePlay_Badge.png"
+                    src="/logo/GooglePlay_Badge.png"
                     alt="" style={{ height: '40px' }}
                   />
                 </a>

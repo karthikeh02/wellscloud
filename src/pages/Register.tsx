@@ -122,7 +122,7 @@ export default function Register() {
         <div className="max-w-[1400px] mx-auto w-full wf-section-px" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} style={{ textDecoration: 'none' }}>
             <img
-              src="https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png"
+              src="/logo/wf_logo_220x23.png"
               alt="Wells Fargo" width="180" height="20"
               style={{ height: '20px', width: 'auto', filter: 'brightness(0) invert(1)' }}
             />

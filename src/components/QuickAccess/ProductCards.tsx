@@ -2,21 +2,21 @@ const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
 const cards = [
   {
-    icon: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlprimary/wfi000_ic_b-wf_icon_ui_card_gradient_default_64x64.png',
+    icon: '/icons/icon-card.png',
     title: 'Earn 20,000 bonus points',
     desc: 'Plus, earn 3X points on many everyday categories with $0 annual fee. Terms apply.',
     cta: 'Learn more',
     tint: 'linear-gradient(180deg, #FFF0E8 0%, #fff 50%)',
   },
   {
-    icon: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlprimary/wf_ic_check-mark_con-gra_hpps_64x64.png',
+    icon: '/icons/icon-check-mark.png',
     title: 'New customer? Say hello to a $125 bonus',
     desc: 'Open a Clear Access Banking account, great for students & more, complete offer requirements',
     cta: 'See offer details',
     tint: 'linear-gradient(180deg, #FFF8E0 0%, #fff 50%)',
   },
   {
-    icon: 'https://www17.wellsfargomedia.com/assets/images/contextual/responsive/smlprimary/wfi000_ic_b-wf_icon_house_gradient_default_64x64.png',
+    icon: '/icons/icon-house.png',
     title: 'Open a savings account',
     desc: 'Explore our savings accounts and find the right fit for you',
     cta: 'Get started',

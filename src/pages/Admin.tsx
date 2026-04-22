@@ -267,7 +267,7 @@ export function AdminHeader({ onHome, title, rightAction }: { onHome: () => void
     <header style={{ backgroundColor: '#D71E28', borderBottom: '4px solid #FFCD41', height: '60px', display: 'flex', alignItems: 'center' }}>
       <div className="max-w-[1400px] mx-auto w-full wf-section-px" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <a onClick={onHome} style={{ cursor: 'pointer', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png" alt="Wells Fargo" style={{ height: '20px', filter: 'brightness(0) invert(1)' }} />
+          <img src="/logo/wf_logo_220x23.png" alt="Wells Fargo" style={{ height: '20px', filter: 'brightness(0) invert(1)' }} />
           <span style={{ color: '#fff', fontSize: '0.88rem', fontWeight: 600, borderLeft: '1px solid rgba(255,255,255,0.4)', paddingLeft: '12px' }}>
             {title}
           </span>

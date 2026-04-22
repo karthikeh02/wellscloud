@@ -4,32 +4,32 @@
   font-display: swap;
   font-family: "Wells Fargo Sans";
   font-weight: 400;
-  src: url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-rg.woff2") format("woff2"),
-       url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-rg.woff") format("woff");
+  src: url("/fonts/wellsfargosans-rg.woff2") format("woff2"),
+       url("/fonts/wellsfargosans-rg.woff") format("woff");
 }
 
 @font-face {
   font-display: swap;
   font-family: "Wells Fargo Sans";
   font-weight: 300;
-  src: url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-lt.woff2") format("woff2"),
-       url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-lt.woff") format("woff");
+  src: url("/fonts/wellsfargosans-lt.woff2") format("woff2"),
+       url("/fonts/wellsfargosans-lt.woff") format("woff");
 }
 
 @font-face {
   font-display: swap;
   font-family: "Wells Fargo Sans";
   font-weight: 600;
-  src: url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-sbd.woff2") format("woff2"),
-       url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-sbd.woff") format("woff");
+  src: url("/fonts/wellsfargosans-sbd.woff2") format("woff2"),
+       url("/fonts/wellsfargosans-sbd.woff") format("woff");
 }
 
 @font-face {
   font-display: swap;
   font-family: "Wells Fargo Sans";
   font-weight: 700;
-  src: url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-bd.woff2") format("woff2"),
-       url("https://www17.wellsfargomedia.com/assets/fonts/wellsfargosans-bd.woff") format("woff");
+  src: url("/fonts/wellsfargosans-bd.woff2") format("woff2"),
+       url("/fonts/wellsfargosans-bd.woff") format("woff");
 }
 
 @theme {
