@@ -17,6 +17,12 @@
 --      call, so tampering with sessionStorage on the browser does nothing.
 -- =====================================================================
 
+begin;
+
+-- Make sure crypt/gen_salt/gen_random_bytes resolve whether pgcrypto lives
+-- in `public` (older Supabase projects) or `extensions` (newer ones).
+set local search_path = public, extensions;
+
 create extension if not exists pgcrypto;
 
 -- ---------- tables ----------------------------------------------------
@@ -52,7 +58,7 @@ create or replace function public._admin_role_for_token(p_token text)
 returns text
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text;
@@ -77,7 +83,7 @@ create or replace function public.admin_login(p_username text, p_password text)
 returns table(token text, role text)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_user admin_users%rowtype;
@@ -105,7 +111,7 @@ create or replace function public.admin_logout(p_token text)
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   delete from admin_sessions where token = p_token;
@@ -118,7 +124,7 @@ create or replace function public.admin_session_role(p_token text)
 returns text
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select public._admin_role_for_token(p_token);
 $$;
@@ -135,7 +141,7 @@ returns table(
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -164,7 +170,7 @@ returns table(
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -188,7 +194,7 @@ create or replace function public.admin_get_client_transactions(p_token text, p_
 returns setof public.transactions
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -209,7 +215,7 @@ create or replace function public.admin_recent_users(p_token text)
 returns table(id uuid, full_name text, email text, phone text, username text, created_at timestamptz)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -235,7 +241,7 @@ returns table(
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -258,7 +264,7 @@ create or replace function public.admin_delete_user(p_token text, p_user_id uuid
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -276,7 +282,7 @@ create or replace function public.admin_delete_transaction(p_token text, p_txn_i
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -302,7 +308,7 @@ create or replace function public.admin_insert_transaction(
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -337,7 +343,7 @@ create or replace function public.admin_update_balances(
 returns void
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_role text := public._admin_role_for_token(p_token);
@@ -361,7 +367,10 @@ insert into public.admin_users(username, password_hash, role) values
   ('superadmin', crypt('supreme123', gen_salt('bf')), 'superadmin')
 on conflict (username) do nothing;
 
+commit;
+
 -- ---------- how to rotate a password ----------------------------------
+-- (run with the same search_path; if it errors, prefix with `extensions.`)
 -- update public.admin_users
 --   set password_hash = crypt('your-new-strong-password', gen_salt('bf'))
 --   where username = 'admin';
