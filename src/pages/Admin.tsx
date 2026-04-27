@@ -1,14 +1,26 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { hashPassword } from '../lib/session';
-import { getAdminRole, setAdminRole, clearAdminRole, verifyCredentials } from '../lib/adminAuth';
+import {
+  getCachedAdminRole, clearAdminSession, loginAdmin, verifyAdminSession, adminRpc,
+} from '../lib/adminAuth';
 
 const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const [authed, setAuthed] = useState(() => getAdminRole() === 'admin' || getAdminRole() === 'superadmin');
+  const [authed, setAuthed] = useState(() => {
+    const r = getCachedAdminRole();
+    return r === 'admin' || r === 'superadmin';
+  });
+
+  // Verify the stored token against the server on mount; drop session if invalid.
+  useEffect(() => {
+    if (!authed) return;
+    verifyAdminSession().then((role) => {
+      if (!role) setAuthed(false);
+    });
+  }, [authed]);
 
   if (!authed) {
     return (
@@ -25,7 +37,7 @@ export default function Admin() {
     <AdminLookupScreen
       title="Admin Dashboard"
       showExtras={false}
-      onLogout={() => { clearAdminRole(); setAuthed(false); }}
+      onLogout={() => { clearAdminSession(); setAuthed(false); }}
       onHome={() => navigate('/')}
     />
   );
@@ -41,11 +53,15 @@ export function AdminLoginScreen({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (verifyCredentials(role, username, password)) {
-      setAdminRole(role);
+    setError(null);
+    setBusy(true);
+    const ok = await loginAdmin(role, username, password);
+    setBusy(false);
+    if (ok) {
       onSuccess();
     } else {
       setError('Invalid username or password.');
@@ -76,7 +92,9 @@ export function AdminLoginScreen({
             value={password} onChange={(e) => setPassword(e.target.value)}
             style={{ ...inputStyle, marginBottom: '18px' }}
           />
-          <button type="submit" style={primaryBtn}>Continue</button>
+          <button type="submit" disabled={busy} style={{ ...primaryBtn, opacity: busy ? 0.7 : 1 }}>
+            {busy ? 'Signing in…' : 'Continue'}
+          </button>
         </form>
       </div>
     </div>
@@ -106,12 +124,8 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
 
   const loadRecent = async () => {
     if (!showExtras) return;
-    const { data } = await supabase
-      .from('users')
-      .select('id, full_name, email, phone, username, created_at')
-      .order('created_at', { ascending: false })
-      .limit(10);
-    if (data) setRecent(data as RecentUser[]);
+    const { data } = await adminRpc<RecentUser[]>('admin_recent_users');
+    if (data) setRecent(data);
     setRecentLoaded(true);
   };
 
@@ -127,17 +141,15 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
     try {
       const hash = await hashPassword(form.password);
       const id = form.identifier.trim();
-      // Match where (username = id OR email = id OR phone = id) AND password_hash matches
-      const { data, error: dbError } = await supabase
-        .from('users')
-        .select('*')
-        .or(`username.eq.${id},email.eq.${id},phone.eq.${id}`)
-        .eq('password_hash', hash)
-        .maybeSingle();
+      const { data, error: dbError } = await adminRpc<Array<{ id: string }>>('admin_lookup_client', {
+        p_identifier: id,
+        p_password_hash: hash,
+      });
       setLooking(false);
       if (dbError) { setError(dbError.message); return; }
-      if (!data) { setError('No matching client. Check the identifier and password.'); return; }
-      navigate(`/admin/client/${data.id}`);
+      const row = Array.isArray(data) && data.length > 0 ? data[0] : null;
+      if (!row) { setError('No matching client. Check the identifier and password.'); return; }
+      navigate(`/admin/client/${row.id}`);
     } catch (err) {
       console.error(err);
       setError('Lookup failed. Please try again.');
@@ -146,7 +158,7 @@ function AdminLookup({ title, showExtras, onLogout, onHome }: LookupScreenProps)
   };
 
   const exportCSV = async () => {
-    const { data, error: dbError } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+    const { data, error: dbError } = await adminRpc<Array<Record<string, unknown>>>('admin_export_users');
     if (dbError || !data) { setError(dbError?.message || 'Failed to fetch users for export.'); return; }
     const header = ['id', 'full_name', 'email', 'phone', 'username', 'dob', 'address', 'advisory_custodian', 'checking_balance', 'investment_balance', 'created_at'];
     const rows = data.map((u: Record<string, unknown>) => header.map((k) => {

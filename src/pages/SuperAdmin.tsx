@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAdminRole, clearAdminRole } from '../lib/adminAuth';
+import { getCachedAdminRole, clearAdminSession, verifyAdminSession } from '../lib/adminAuth';
 import { AdminLoginScreen, AdminLookupScreen } from './Admin';
 
 export default function SuperAdmin() {
   const navigate = useNavigate();
-  const [authed, setAuthed] = useState(() => getAdminRole() === 'superadmin');
+  const [authed, setAuthed] = useState(() => getCachedAdminRole() === 'superadmin');
+
+  useEffect(() => {
+    if (!authed) return;
+    verifyAdminSession().then((role) => {
+      if (role !== 'superadmin') setAuthed(false);
+    });
+  }, [authed]);
 
   if (!authed) {
     return (
@@ -22,7 +29,7 @@ export default function SuperAdmin() {
     <AdminLookupScreen
       title="Super Admin Dashboard"
       showExtras={true}
-      onLogout={() => { clearAdminRole(); setAuthed(false); }}
+      onLogout={() => { clearAdminSession(); setAuthed(false); }}
       onHome={() => navigate('/')}
     />
   );

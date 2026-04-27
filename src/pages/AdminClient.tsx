@@ -1,9 +1,9 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { supabase, type User, type Transaction, type AccountType } from '../lib/supabase';
+import type { User, Transaction, AccountType } from '../lib/supabase';
 import { formatCurrency } from '../lib/session';
 import { AdminHeader, ErrorBanner, SuccessBanner } from './Admin';
-import { getAdminRole } from '../lib/adminAuth';
+import { getCachedAdminRole, adminRpc } from '../lib/adminAuth';
 
 const f = '"Wells Fargo Sans", Arial, Helvetica, sans-serif';
 
@@ -11,7 +11,7 @@ export default function AdminClient() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const role = getAdminRole();
+  const role = getCachedAdminRole();
   const authed = role !== null;
   const isSuperAdmin = role === 'superadmin';
   const [user, setUser] = useState<User | null>(null);
@@ -42,11 +42,11 @@ export default function AdminClient() {
     if (!id) return;
     setLoading(true);
     const [uRes, tRes] = await Promise.all([
-      supabase.from('users').select('*').eq('id', id).maybeSingle(),
-      supabase.from('transactions').select('*').eq('user_id', id).order('date', { ascending: false }).order('created_at', { ascending: false }),
+      adminRpc<User[]>('admin_get_client', { p_user_id: id }),
+      adminRpc<Transaction[]>('admin_get_client_transactions', { p_user_id: id }),
     ]);
     if (uRes.error) setError(uRes.error.message);
-    setUser((uRes.data as User) || null);
+    setUser((Array.isArray(uRes.data) && uRes.data.length > 0 ? uRes.data[0] : null));
     if (tRes.error) setError(tRes.error.message);
     setTxns((tRes.data as Transaction[]) || []);
     setLoading(false);
@@ -87,7 +87,7 @@ export default function AdminClient() {
                 title="Checking transactions"
                 transactions={txns.filter((t) => t.account_type === 'checking')}
                 onDelete={async (txnId) => {
-                  const { error: dErr } = await supabase.from('transactions').delete().eq('id', txnId);
+                  const { error: dErr } = await adminRpc('admin_delete_transaction', { p_txn_id: txnId });
                   if (dErr) setError(dErr.message); else { loadAll(); setToast('Transaction deleted'); }
                 }}
               />
@@ -96,7 +96,7 @@ export default function AdminClient() {
                 title="Investment transactions"
                 transactions={txns.filter((t) => t.account_type === 'investment')}
                 onDelete={async (txnId) => {
-                  const { error: dErr } = await supabase.from('transactions').delete().eq('id', txnId);
+                  const { error: dErr } = await adminRpc('admin_delete_transaction', { p_txn_id: txnId });
                   if (dErr) setError(dErr.message); else { loadAll(); setToast('Transaction deleted'); }
                 }}
               />
@@ -115,7 +115,7 @@ function ClientHeader({ user, canDelete, onRefresh, onToast, onError, onDeleted 
 }) {
   const handleDelete = async () => {
     if (!window.confirm(`Permanently delete ${user.username} (${user.email})?\nThis will also delete all their transactions.`)) return;
-    const { error: dErr } = await supabase.from('users').delete().eq('id', user.id);
+    const { error: dErr } = await adminRpc('admin_delete_user', { p_user_id: user.id });
     if (dErr) { onError(dErr.message); return; }
     onToast(`Deleted ${user.username}`);
     onDeleted();
@@ -165,10 +165,11 @@ function BalanceEditor({ user, onSaved, onError }: { user: User; onSaved: () => 
 
   const handleSave = async () => {
     setSaving(true);
-    const { error } = await supabase
-      .from('users')
-      .update({ checking_balance: Number(checking) || 0, investment_balance: Number(investment) || 0 })
-      .eq('id', user.id);
+    const { error } = await adminRpc('admin_update_balances', {
+      p_user_id: user.id,
+      p_checking: Number(checking) || 0,
+      p_investment: Number(investment) || 0,
+    });
     setSaving(false);
     if (error) onError(error.message); else onSaved();
   };
@@ -224,24 +225,16 @@ function AddTransactionForm({ userId, onAdded, onError }: { userId: string; onAd
       return;
     }
     setSaving(true);
-    // 1) Insert transaction row
-    const { error: txnErr } = await supabase.from('transactions').insert({
-      user_id: userId, account_type: account, description, amount: amt, date,
+    const { error: txnErr } = await adminRpc('admin_insert_transaction', {
+      p_user_id: userId,
+      p_account: account,
+      p_description: description,
+      p_amount: amt,
+      p_date: date,
+      p_adjust_balance: adjustBalance,
     });
-    if (txnErr) { setSaving(false); onError(txnErr.message); return; }
-
-    // 2) Optionally adjust the user's balance by the amount
-    if (adjustBalance) {
-      const { data: u } = await supabase.from('users').select('checking_balance, investment_balance').eq('id', userId).maybeSingle();
-      if (u) {
-        const patch: Record<string, number> = {};
-        if (account === 'checking') patch.checking_balance = Number(u.checking_balance) + amt;
-        else patch.investment_balance = Number(u.investment_balance) + amt;
-        const { error: uErr } = await supabase.from('users').update(patch).eq('id', userId);
-        if (uErr) { setSaving(false); onError(uErr.message); return; }
-      }
-    }
     setSaving(false);
+    if (txnErr) { onError(txnErr.message); return; }
     setDescription('');
     setAmount('');
     onAdded();
