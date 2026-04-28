@@ -139,7 +139,7 @@ export default function Register() {
 
       <div style={{
         flex: 1,
-        backgroundImage: 'url(https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=1920&q=80)',
+        backgroundImage: 'url(/images/fargo-hero.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
