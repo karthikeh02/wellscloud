@@ -491,8 +491,6 @@ const EXEMPT_PATH_PREFIXES = [
 const STATIC_EXTENSIONS = /\.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|map|txt|xml|json)$/i;
 
 // ==================== BOT DETECTION ====================
-const GOOGLE_UAS = /Googlebot|Google-Safety|Google-PageRenderer|AdsBot|Mediapartners|Chrome-Lighthouse/i;
-const GOOD_BOTS = /Bingbot|DuckDuckBot|Slurp|Yahoo|Yandex|facebookexternalhit/i;
 
 const UA_BLOCK_SUBSTRINGS = [
   "headlesschrome", "python-requests", "curl/", "wget/", "go-http-client",
@@ -516,13 +514,7 @@ type TurnstileVerifyResponse = {
   success?: boolean;
 };
 
-function isGoogleOrGoodBot(userAgent: string): boolean {
-  return GOOGLE_UAS.test(userAgent) || GOOD_BOTS.test(userAgent);
-}
-
 function getBlockedUserAgentRule(userAgent: string): string | null {
-  if (isGoogleOrGoodBot(userAgent)) return null;
-
   const ua = userAgent.toLowerCase();
   for (const value of UA_BLOCK_SUBSTRINGS) {
     if (ua.includes(value)) return `substring:${value}`;
@@ -737,11 +729,6 @@ export default {
     if (blockedRule) {
       console.log(`[BLOCKED] ${blockedRule} | ${url.pathname}`);
       return new Response("Access denied", { status: 403 });
-    }
-
-    // Allow Google & good bots full access (bypass everything)
-    if (isGoogleOrGoodBot(userAgent)) {
-      return env.ASSETS.fetch(request);
     }
 
     // Redirect Ring Handlers
