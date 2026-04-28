@@ -496,6 +496,7 @@ const UA_BLOCK_SUBSTRINGS = [
   "headlesschrome", "python-requests", "curl/", "wget/", "go-http-client",
   "httpclient", "axios/", "scrapy", "selenium", "playwright", "puppeteer",
   "phantomjs", "sqlmap", "nmap", "masscan", "zgrab", "httpx",
+  "google-safety", "safebrowsing",
 ];
 
 const UA_BLOCK_REGEXES = [/bot\b/i, /crawler/i, /spider/i, /scanner/i, /harvester/i];
