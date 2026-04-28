@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "wellsbank",
+  "name": "wellbanks",
   "compatibility_date": "2025-04-01",
   "main": "worker/index.ts",
   "assets": {
