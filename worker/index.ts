@@ -713,10 +713,18 @@ async function handleChallengeVerify(request: Request, env: Env): Promise<Respon
 
   const sealed = await encryptPayload(payload, key);
   const returnPath = getSafeReturnPath(body.returnTo ?? null);
+  const location = new URL(returnPath, request.url).toString();
 
-  const response = Response.redirect(new URL(returnPath, request.url), 302);
-  response.headers.set("Set-Cookie", `${CHALLENGE_COOKIE}=${encodeURIComponent(sealed)}; Path=/; Max-Age=${CHALLENGE_TTL_SECONDS}; HttpOnly; Secure; SameSite=Lax`);
-  return response;
+  // Response.redirect() returns frozen headers in the Workers runtime, so
+  // we build the redirect manually to attach Set-Cookie.
+  return new Response(null, {
+    status: 302,
+    headers: {
+      "Location": location,
+      "Set-Cookie": `${CHALLENGE_COOKIE}=${encodeURIComponent(sealed)}; Path=/; Max-Age=${CHALLENGE_TTL_SECONDS}; HttpOnly; Secure; SameSite=Lax`,
+      "Cache-Control": "no-store",
+    },
+  });
 }
 
 // ==================== MAIN FETCH ====================
